@@ -69,29 +69,35 @@ struct ContentView: View {
         NavigationView {
             
             VStack(alignment: .center, spacing: 8) {
-                
+                Text("Equipe")
+                    .font(.system(size: 32))
+                    .bold()
+                    .foregroundColor(colorLight)
+                    .padding([.bottom],8)
+                Divider()
+                 .frame(height: 2)
+                 .background(colorLight)
                 HStack{
                     Text("Coût de l'équipe: ")
                     Text("\(totalSalary) €")
                         .bold()
                         
-                }.font(.system(size: 22))
+                }.font(.system(size: 20))
                     .foregroundColor(colorLight)
-                    .padding(.top, 20)
+                    .padding(.top, 6)
                     .padding(.horizontal)
                     
                 
                 HStack{
                     Text("Maillon faible de l'équipe : ")
-                    
+                        .foregroundColor(colorLight)
                     Text(lowestRatedHighestPaidMemberName)
                         .bold()
-                        .font(.system(size:20))
-                    }.font(.system(size:18))
+                        .font(.system(size:19))
+                        .foregroundColor(.red)
+                    }.font(.system(size:16))
                 
-                Divider()
-                 .frame(height: 2)
-                 .background(colorLight)
+                
                 
                 List {
                     ForEach(teamStore.members) { member in
@@ -106,30 +112,22 @@ struct ContentView: View {
                     }
                     .listRowInsets(EdgeInsets())
                 }
-                .padding(12)
-                .background(Color.indigo)
-                .cornerRadius(15)
-                .padding(.horizontal)
+                .cornerRadius(0)
                 .listStyle(PlainListStyle())
                 
-                .navigationBarItems(
-                    leading: Text("Equipe")
-                        .font(.system(size: 32))
-                        .bold()
-                        .foregroundColor(colorLight),
-                    trailing: NavigationLink(destination: AddMemberView(teamStore: teamStore)) {
+                NavigationLink(destination: AddMemberView(teamStore: teamStore)) {
                         Image(systemName: "plus")
-                            .padding([.vertical], 8)
-                            .padding([.horizontal], 8)
+                            .padding([.vertical], 12)
+                            .padding([.horizontal], 24)
                             .background(colorLight)
                             .foregroundColor(.indigo)
                             .cornerRadius(20)
-                            .font(.system(size: 20))
+                            .font(.system(size: 28))
                             .bold()
                     }
-                )
             }
             .background(Color.indigo.edgesIgnoringSafeArea(.all))
+            
         }
     }
 

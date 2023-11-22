@@ -33,7 +33,8 @@ struct MemberView: View{
                     }
                     
                     HStack{
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 12) {
+                        
                             Text(member.name.isEmpty ? "non renseigné" : member.name)
                                 .font(.system(size:21))
                                 .bold()
