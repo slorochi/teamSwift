@@ -12,6 +12,8 @@ import UIKit
 struct MemberDetailView: View {
     @ObservedObject var teamStore: TeamStore
     let member :Team
+    let jobOptions = ["Développeur", "Commercial", "Comptable", "Manager"]
+    @State private var selectedJob = "Développeur"
     @State private var showToast: Bool = false
     @State private var toastMessage: String = ""
     @State private var imageUrl = ""
@@ -22,61 +24,59 @@ struct MemberDetailView: View {
     @State private var creationDate = Date()
     @State private var color = Color(.white)
     var body: some View {
-        NavigationView {
             VStack{
-                ZStack (alignment : .center){
-                AsyncImage(url: URL(string: member.imageUrl) ?? URL(string: "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg")!) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                        //                            .aspectRatio(contentMode: .fit)
-                    case .failure, .empty:
-                        ProgressView()
-                    @unknown default:
-                        EmptyView()
+                ZStack (alignment: .bottom){
+                    AsyncImage(url: URL(string: member.imageUrl) ?? URL(string: "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg")!) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                            //                            .aspectRatio(contentMode: .fit)
+                        case .failure, .empty:
+                            Rectangle().scaledToFill().background(Color(.gray))
+//                            ProgressView()
+                        @unknown default:
+                            EmptyView()
+                        }
                     }
-                }
-                    HStack{
-                        Text("\(member.name) : ")
-                            .font(.title2)
-                            .bold()
-                        Text("\(member.role)")
-                            .font(.title3)
-                            .bold()
-                    }.position()
-                    
-            }
-                HStack{
-                    Text("Date d'arrivée : ")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                    Text("\(formattedDate(date: member.creationDate))")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
+                    Text("\(member.name) : \(member.role)")
+                           .font(.title)
+                           .fontWeight(.bold)
+                           .foregroundColor(.white)
+                           .padding()
+                        
+                    }
+                
                 HStack{
                     Text("Salaire : ")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
+                        .font(.system(size:12))
+                        .foregroundColor(.black)
                     Text("\(member.salary) €")
                         .font(.subheadline)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.black)
                 }
-                
+                HStack{
+                    Text("Date d'arrivée : ")
+                    Text("\(formattedDate(date: member.creationDate))")
+                }
+                .font(.system(size: 12))
+                .foregroundColor(.gray)
+               
                 Form {
                     Section(header: Text("Team Details")) {
                         TextField("Image URL", text: $imageUrl)
                         TextField("Nom", text: $name)
-                        TextField("Métier", text: $role)
+                        Picker("Métier", selection: $selectedJob) {
+                            ForEach(jobOptions, id: \.self) { job in
+                                Text(job)
+                            }
+                        }
                         Stepper(value: $rating, in: 0...10) {
-                            Text("Note: \(rating, specifier: "%.0f")")
+                            Text("Note: \(rating)")
                         }
-                        HStack {
-                            TextField("Salaire", value: $salary, format: .number)
-                            Text("€")
-                        }
+                        HStack {TextField("Salaire", value: $salary , format: .number) .keyboardType(.numberPad)
+                            Text("€")}
                         DatePicker("Date d'arrivée", selection: $creationDate, displayedComponents: .date)
                         ColorPicker("Choisir couleur", selection: $color)
                     }
@@ -87,7 +87,7 @@ struct MemberDetailView: View {
                             if let index = teamStore.members.firstIndex(where: { $0.id == member.id }) {
                                 teamStore.members[index].imageUrl = imageUrl
                                 teamStore.members[index].name = name
-                                teamStore.members[index].role = role
+                                teamStore.members[index].role = selectedJob
                                 teamStore.members[index].rating = rating
                                 teamStore.members[index].salary = salary
                                 teamStore.members[index].creationDate = creationDate
@@ -120,14 +120,13 @@ struct MemberDetailView: View {
                             // Charger les détails du membre dans les State
                             imageUrl = member.imageUrl
                             name = member.name
-                            role = member.role
+                            selectedJob = member.role
                             rating = member.rating
                             salary = member.salary
                             creationDate = member.creationDate
                             color = member.color
-                        }
+            }
         }
-    }
     
     func formattedDate(date: Date) -> String {
         let dateFormatter = DateFormatter()

@@ -38,59 +38,104 @@ class TeamStore: ObservableObject {
 struct ContentView: View {
     @ObservedObject var teamStore = TeamStore()
     @State private var isShowingAddTeamView = false
-    
-    var body: some View {
-        NavigationView {
-            ZStack {
-                Color.indigo.edgesIgnoringSafeArea(.all)
-                Spacer()
-                List {
-                    ForEach(teamStore.members) { member in
-                        VStack{ MemberView(member:member, teamStore:teamStore)
-                            Spacer()}
-                        .background(.indigo)
-                        }
-                    .onDelete{ IndexSet in teamStore.members.remove(atOffsets: IndexSet)
-                    }
-//                    .listStyle(PlainListStyle())
-                    .listRowInsets(EdgeInsets())
-//                    .listRowSeparatorTint(.indigo)
-            
-                        
-                    
-                }.padding(12)
-                    .scrollContentBackground(.hidden)
-                    .background(.indigo)
-//                .listStyle(PlainListStyle())
-                .navigationBarItems(leading:
-                                HStack {
-                                    Text("Votre Team")
-                                        .font(.system(size: 32))
-                                        .bold()
-                                        .foregroundColor(.white)
-                                    Spacer()
-                                },
-                                trailing: NavigationLink(destination: AddMemberView(teamStore: teamStore)) {
-                                    Image(systemName: "plus")
-                                        .padding([.vertical], 7)
-                                        .padding([.horizontal], 16)
-                                        .background(Color(.white))
-                                        .foregroundColor(.indigo)
-                                        .cornerRadius(10)
-                                        .font(.system(size: 20))
-                                        .bold()
-                                }
-                            )
+    var totalSalary: Int {
+            teamStore.members.reduce(0) { total, member in
+                total + Int(member.salary) * 2
             }
-          
         }
+    var lowestRatedHighestPaidMemberName: String {
+        let sortedMembers = teamStore.members.sorted {
+            if $0.rating == $1.rating {
+                return $0.salary > $1.salary
+            }
+            return $0.rating < $1.rating
+        }
+
+        if let lowestRating = sortedMembers.first?.rating {
+            let lowestRatedMembers = sortedMembers.filter { $0.rating == lowestRating }
+            if lowestRatedMembers.count == 1 {
+                return lowestRatedMembers[0].name
+            } else {
+                let highestPaidMember = lowestRatedMembers.reversed().max(by: { $0.salary < $1.salary })
+                return highestPaidMember?.name ?? ""
+            }
+        }
+
+        return ""
     }
     
-    
-    func deleteMember(at offsets: IndexSet) {
-            teamStore.members.remove(atOffsets: offsets)
+    let colorLight = Color(red:228/255, green:228/255, blue:242/255)
+    var body: some View {
+        NavigationView {
+            
+            VStack(alignment: .center, spacing: 8) {
+                
+                HStack{
+                    Text("Coût de l'équipe: ")
+                    Text("\(totalSalary) €")
+                        .bold()
+                        
+                }.font(.system(size: 22))
+                    .foregroundColor(colorLight)
+                    .padding(.top, 20)
+                    .padding(.horizontal)
+                    
+                
+                HStack{
+                    Text("Maillon faible de l'équipe : ")
+                    
+                    Text(lowestRatedHighestPaidMemberName)
+                        .bold()
+                        .font(.system(size:20))
+                    }.font(.system(size:18))
+                
+                Divider()
+                 .frame(height: 2)
+                 .background(colorLight)
+                
+                List {
+                    ForEach(teamStore.members) { member in
+                        VStack {
+                            MemberView(member: member, teamStore: teamStore)
+                            Spacer()
+                        }
+                        .background(.indigo)
+                    }
+                    .onDelete { IndexSet in
+                        teamStore.members.remove(atOffsets: IndexSet)
+                    }
+                    .listRowInsets(EdgeInsets())
+                }
+                .padding(12)
+                .background(Color.indigo)
+                .cornerRadius(15)
+                .padding(.horizontal)
+                .listStyle(PlainListStyle())
+                
+                .navigationBarItems(
+                    leading: Text("Equipe")
+                        .font(.system(size: 32))
+                        .bold()
+                        .foregroundColor(colorLight),
+                    trailing: NavigationLink(destination: AddMemberView(teamStore: teamStore)) {
+                        Image(systemName: "plus")
+                            .padding([.vertical], 8)
+                            .padding([.horizontal], 8)
+                            .background(colorLight)
+                            .foregroundColor(.indigo)
+                            .cornerRadius(20)
+                            .font(.system(size: 20))
+                            .bold()
+                    }
+                )
+            }
+            .background(Color.indigo.edgesIgnoringSafeArea(.all))
         }
-    
+    }
+
+    func deleteMember(at offsets: IndexSet) {
+        teamStore.members.remove(atOffsets: offsets)
+    }
 }
 
 

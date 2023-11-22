@@ -35,13 +35,14 @@ struct MemberView: View{
                     HStack{
                         VStack(alignment: .leading, spacing: 4) {
                             Text(member.name.isEmpty ? "non renseigné" : member.name)
-                                .foregroundColor(.black)
-                                .font(.system(size:22))
+                                .font(.system(size:21))
+                                .bold()
                             
                            
                             Text("\(member.salary)€")
-                                .font(.system(size:18))
-                                .bold()
+                                .font(.system(size:16))
+                                .italic()
+                            
                         }
                         
                         
@@ -50,20 +51,21 @@ struct MemberView: View{
                         VStack(alignment: .center, spacing: 0) {
                             Text("\(member.rating)")
                             
-                        }.foregroundColor(member.color==(.indigo) ? .white : .black)
+                        }.foregroundColor(member.color==(.indigo) ? .white : .white)
                             .font(.system(size:40))
                             .bold()
                     }.padding([.leading],6)
                         .padding([.trailing],0)
                     
                 }
+                .foregroundColor(.white)
                 .frame(height:90)
                 
             }
             .cornerRadius(15)
             .padding([.trailing],8)
-            .background(member.color)
-            .border(member.color, width: 2)
+            .background(Color(red: 75/255, green: 71/255, blue:196/255))
+            .border(Color(red: 75/255, green: 71/255, blue:196/255), width: 2)
         }
 
     func formattedDate(date: Date) -> String {

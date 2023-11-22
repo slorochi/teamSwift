@@ -12,11 +12,13 @@ import UIKit
 struct AddMemberView: View {
     @ObservedObject var teamStore: TeamStore
     @State private var showToast: Bool = false
+    let jobOptions = ["Développeur", "Commercial", "Comptable", "Manager"]
+    @State private var selectedJob = "Développeur"
     @State private var toastMessage: String = ""
     @State private var imageUrl = ""
     @State private var name = ""
     @State private var role = ""
-    @State private var rating = 0
+    @State private var rating = 5
     @State private var salary = 0
     @State private var creationDate = Date()
     @State private var color = Color(.white)
@@ -26,11 +28,15 @@ struct AddMemberView: View {
                 Section(header: Text("Member Details")) {
                     TextField("Image URL", text: $imageUrl)
                     TextField("Nom", text: $name)
-                    TextField("Métier", text: $role)
-                    Stepper(value: $rating, in: 0...10) {
-                        Text("Note: \(rating, specifier: "%.0f")")
+                    Picker("Métier", selection: $selectedJob) {
+                        ForEach(jobOptions, id: \.self) { job in
+                            Text(job)
+                        }
                     }
-                    HStack {TextField("Salaire", value: $salary , format: .number)
+                    Stepper(value: $rating, in: 0...10) {
+                        Text("Note: \(rating)")
+                    }
+                    HStack {TextField("Salaire", value: $salary , format: .number) .keyboardType(.numberPad)
                         Text("€")}
                     DatePicker("Date d'arrivée", selection: $creationDate, displayedComponents: .date)
                     ColorPicker("Choisir couleur",selection: $color)
@@ -39,7 +45,7 @@ struct AddMemberView: View {
                 Section {
                     
                     Button("Ajouter") {
-                        let newTeam = Team(imageUrl: imageUrl, name: name, role: role, rating: rating, salary: salary, creationDate: creationDate, color: color)
+                        let newTeam = Team(imageUrl: imageUrl, name: name, role: selectedJob, rating: rating, salary: salary, creationDate: creationDate, color: color)
                         teamStore.members.append(newTeam)
                         
                         showToast = true
@@ -49,10 +55,12 @@ struct AddMemberView: View {
                                             showToast = false
                                             toastMessage = ""
                         }
+                        
+                        selectedJob = "Développeur"
                         imageUrl = ""
                         name = ""
                         role = ""
-                        rating = 0
+                        rating = 5
                         salary = 0
                         creationDate = Date()
                         color = Color(.white)
