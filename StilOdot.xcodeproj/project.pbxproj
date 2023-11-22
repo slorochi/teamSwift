@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6322BFEE2B0DF2430046B4A1 /* AddMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6322BFED2B0DF2430046B4A1 /* AddMemberView.swift */; };
+		6322BFF02B0DF27E0046B4A1 /* MemberDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6322BFEF2B0DF27E0046B4A1 /* MemberDetail.swift */; };
+		6322BFF22B0DF2950046B4A1 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6322BFF12B0DF2950046B4A1 /* ToastView.swift */; };
+		6322BFF42B0DF3B50046B4A1 /* MemberList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6322BFF32B0DF3B50046B4A1 /* MemberList.swift */; };
 		63CDAED72B0B6C0B0060F5BA /* StilOdotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CDAED62B0B6C0B0060F5BA /* StilOdotApp.swift */; };
 		63CDAED92B0B6C0B0060F5BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CDAED82B0B6C0B0060F5BA /* ContentView.swift */; };
 		63CDAEDB2B0B6C110060F5BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63CDAEDA2B0B6C110060F5BA /* Assets.xcassets */; };
@@ -14,6 +18,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6322BFED2B0DF2430046B4A1 /* AddMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMemberView.swift; sourceTree = "<group>"; };
+		6322BFEF2B0DF27E0046B4A1 /* MemberDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDetail.swift; sourceTree = "<group>"; };
+		6322BFF12B0DF2950046B4A1 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		6322BFF32B0DF3B50046B4A1 /* MemberList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberList.swift; sourceTree = "<group>"; };
 		63CDAED32B0B6C0B0060F5BA /* StilOdot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StilOdot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63CDAED62B0B6C0B0060F5BA /* StilOdotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StilOdotApp.swift; sourceTree = "<group>"; };
 		63CDAED82B0B6C0B0060F5BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -32,6 +40,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6322BFEC2B0DF2190046B4A1 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				6322BFED2B0DF2430046B4A1 /* AddMemberView.swift */,
+				6322BFEF2B0DF27E0046B4A1 /* MemberDetail.swift */,
+				6322BFF12B0DF2950046B4A1 /* ToastView.swift */,
+				6322BFF32B0DF3B50046B4A1 /* MemberList.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		63CDAECA2B0B6C0A0060F5BA = {
 			isa = PBXGroup;
 			children = (
@@ -51,6 +70,7 @@
 		63CDAED52B0B6C0B0060F5BA /* StilOdot */ = {
 			isa = PBXGroup;
 			children = (
+				6322BFEC2B0DF2190046B4A1 /* View */,
 				63CDAED62B0B6C0B0060F5BA /* StilOdotApp.swift */,
 				63CDAED82B0B6C0B0060F5BA /* ContentView.swift */,
 				63CDAEDA2B0B6C110060F5BA /* Assets.xcassets */,
@@ -137,8 +157,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6322BFF02B0DF27E0046B4A1 /* MemberDetail.swift in Sources */,
+				6322BFF42B0DF3B50046B4A1 /* MemberList.swift in Sources */,
+				6322BFEE2B0DF2430046B4A1 /* AddMemberView.swift in Sources */,
 				63CDAED92B0B6C0B0060F5BA /* ContentView.swift in Sources */,
 				63CDAED72B0B6C0B0060F5BA /* StilOdotApp.swift in Sources */,
+				6322BFF22B0DF2950046B4A1 /* ToastView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
