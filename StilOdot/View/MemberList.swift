@@ -42,7 +42,7 @@ struct MemberView: View{
                                 .font(.system(size:21))
                                 .bold()
                             HStack{
-                                Text("\(formatCurrency(member.salary))€")
+                                Text("\(formatCurrency(member.salary))")
                                     .font(.system(size:16))
                                     .italic()
                                 Text("\(member.role)")

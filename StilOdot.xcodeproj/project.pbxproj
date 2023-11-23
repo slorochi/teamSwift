@@ -65,7 +65,6 @@
 		63CDAECA2B0B6C0A0060F5BA = {
 			isa = PBXGroup;
 			children = (
-				632B05392B0F56E600CBC763 /* members.json */,
 				63CDAED52B0B6C0B0060F5BA /* StilOdot */,
 				63CDAED42B0B6C0B0060F5BA /* Products */,
 			);
@@ -82,6 +81,7 @@
 		63CDAED52B0B6C0B0060F5BA /* StilOdot */ = {
 			isa = PBXGroup;
 			children = (
+				632B05392B0F56E600CBC763 /* members.json */,
 				632B05362B0F453300CBC763 /* Classes */,
 				6322BFEC2B0DF2190046B4A1 /* View */,
 				63CDAED62B0B6C0B0060F5BA /* StilOdotApp.swift */,

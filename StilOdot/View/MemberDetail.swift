@@ -199,6 +199,7 @@ struct MemberDetailView: View {
             }
         }
     
+    
 }
 
 struct Triangle: Shape {

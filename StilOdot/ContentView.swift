@@ -68,7 +68,7 @@ struct ContentView: View {
             if lowestRatedMembers.count == 1 {
                 return lowestRatedMembers[0].name
             } else {
-                let highestPaidMember = lowestRatedMembers.reversed().max(by: { $0.salary < $1.salary })
+                    let highestPaidMember = lowestRatedMembers.reversed().max(by: { $0.salary < $1.salary })
                 return highestPaidMember?.name ?? ""
             }
         }
@@ -109,7 +109,7 @@ struct ContentView: View {
                  .background(colorLight)
                                 HStack{
                     Text("Coût de l'équipe: ")
-                    Text("\(formatCurrency(totalSalary)) €")
+                    Text("\(formatCurrency(totalSalary))")
                         .bold()
                    
                         
