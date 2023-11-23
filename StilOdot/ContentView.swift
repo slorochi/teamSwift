@@ -5,42 +5,54 @@
 //  Created by LANDA Théo on 20/11/2023.
 //
 
-
+import Foundation
 import SwiftUI
 import UIKit
 
-struct Team:Identifiable {
-    var id = UUID()
-    var imageUrl: String
-    var name: String
-    var role: String
-    var rating: Int
-    var salary: Int
-    var creationDate: Date
-    var color: Color
+
+enum NetworkError: Error {
+    case badUrl
+    case invalidRequest
+    case badResponse
+    case badStatus
+    case failedToDecodeResponse
 }
 
-class TeamStore: ObservableObject {
-    @Published var members: [Team] = []
-    
-    func addMember(imageUrl: String, name: String, role: String, rating: Int,salary:Int, creationDate: Date, color: Color) {
-        let newTeam = Team(imageUrl: imageUrl, name: name, role: role, rating: rating, salary: salary, creationDate: creationDate, color: color)
-        members.append(newTeam)
-    }
-    
-    func removeMember(at indexSet: IndexSet) {
-            members.remove(atOffsets: indexSet) // Supprimer les éléments à partir de l'indexSet
+class WebService: Codable {
+    func downloadData<T: Codable>(fromURL: String) async -> T? {
+        do {
+            guard let url = URL(string: fromURL) else { throw NetworkError.badUrl }
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard let response = response as? HTTPURLResponse else { throw NetworkError.badResponse }
+            guard response.statusCode >= 200 && response.statusCode < 300 else { throw NetworkError.badStatus }
+            guard let decodedResponse = try? JSONDecoder().decode(T.self, from: data) else { throw NetworkError.failedToDecodeResponse }
+            
+            return decodedResponse
+        } catch NetworkError.badUrl {
+            print("There was an error creating the URL")
+        } catch NetworkError.badResponse {
+            print("Did not get a valid response")
+        } catch NetworkError.badStatus {
+            print("Did not get a 2xx status code from the response")
+        } catch NetworkError.failedToDecodeResponse {
+            print("Failed to decode response into the given type")
+        } catch {
+            print("An error occured downloading the data")
         }
-    
+        
+        return nil
+    }
 }
+
 
 // main content
 struct ContentView: View {
+    // teamstore will automatically load data from init
     @ObservedObject var teamStore = TeamStore()
     @State private var isShowingAddTeamView = false
-    var totalSalary: Int {
+    var totalSalary: Double {
             teamStore.members.reduce(0) { total, member in
-                total + Int(member.salary) * 2
+                total + Double(member.salary) * 2
             }
         }
     var lowestRatedHighestPaidMemberName: String {
@@ -63,24 +75,43 @@ struct ContentView: View {
 
         return ""
     }
-    
+    let colorIndigo = Color(red:94/255, green:94/255,blue:225/255)
     let colorLight = Color(red:228/255, green:228/255, blue:242/255)
+    let indigoDark = Color(red: 75/255, green: 71/255, blue:196/255)
+    let red = Color(red: 245/255, green: 88/255, blue:71/255)
     var body: some View {
         NavigationView {
             
             VStack(alignment: .center, spacing: 8) {
+                HStack (alignment: .center){
+                    AsyncImage(url: URL(string: "https://cdn-icons-png.flaticon.com/512/1357/1357616.png?ga=GA1.1.215399361.1700747303")) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height:45)
+                                .padding([.bottom,.trailing],8)
+                        case .failure, .empty:
+                            ProgressView()
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
                 Text("Equipe")
                     .font(.system(size: 32))
                     .bold()
                     .foregroundColor(colorLight)
                     .padding([.bottom],8)
+                }
                 Divider()
                  .frame(height: 2)
                  .background(colorLight)
-                HStack{
+                                HStack{
                     Text("Coût de l'équipe: ")
-                    Text("\(totalSalary) €")
+                    Text("\(formatCurrency(totalSalary)) €")
                         .bold()
+                   
                         
                 }.font(.system(size: 20))
                     .foregroundColor(colorLight)
@@ -91,13 +122,15 @@ struct ContentView: View {
                 HStack{
                     Text("Maillon faible de l'équipe : ")
                         .foregroundColor(colorLight)
-                    Text(lowestRatedHighestPaidMemberName)
+                    Text(lowestRatedHighestPaidMemberName.isEmpty ? "non rensf" : lowestRatedHighestPaidMemberName)
                         .bold()
                         .font(.system(size:19))
-                        .foregroundColor(.red)
+                        .foregroundColor(red)
                     }.font(.system(size:16))
                 
-                
+                HStack{
+                    
+                }
                 
                 List {
                     ForEach(teamStore.members) { member in
@@ -105,6 +138,7 @@ struct ContentView: View {
                             MemberView(member: member, teamStore: teamStore)
                             Spacer()
                         }
+                        .overlay(Rectangle().frame(width: nil, height: 1, alignment: .bottom).foregroundColor(indigoDark), alignment: .bottom)
                         .background(.indigo)
                     }
                     .onDelete { IndexSet in
@@ -112,21 +146,22 @@ struct ContentView: View {
                     }
                     .listRowInsets(EdgeInsets())
                 }
+                .overlay(Rectangle().frame(width: nil, height: 1, alignment: .top).foregroundColor(indigoDark), alignment: .top)
                 .cornerRadius(0)
                 .listStyle(PlainListStyle())
                 
                 NavigationLink(destination: AddMemberView(teamStore: teamStore)) {
                         Image(systemName: "plus")
-                            .padding([.vertical], 12)
-                            .padding([.horizontal], 24)
+                            .padding([.vertical], 8)
+                            .padding([.horizontal], 48)
                             .background(colorLight)
                             .foregroundColor(.indigo)
-                            .cornerRadius(20)
+                            .cornerRadius(12)
                             .font(.system(size: 28))
                             .bold()
                     }
             }
-            .background(Color.indigo.edgesIgnoringSafeArea(.all))
+            .background(colorIndigo.edgesIgnoringSafeArea(.all))
             
         }
     }
@@ -134,6 +169,17 @@ struct ContentView: View {
     func deleteMember(at offsets: IndexSet) {
         teamStore.members.remove(atOffsets: offsets)
     }
+    
+  
+    
+    func formatCurrency(_ amount: Double) -> String {
+           let numberFormatter = NumberFormatter()
+           numberFormatter.numberStyle = .currency
+           numberFormatter.currencySymbol = "€"
+           numberFormatter.maximumFractionDigits = 2
+
+           return numberFormatter.string(from: NSNumber(value: amount)) ?? ""
+       }
 }
 
 

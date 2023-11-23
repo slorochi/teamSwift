@@ -13,6 +13,10 @@ struct MemberDetailView: View {
     @ObservedObject var teamStore: TeamStore
     let member :Team
     let jobOptions = ["Développeur", "Commercial", "Comptable", "Manager"]
+    let customIndigo = Color(red:94/255, green:94/255,blue:225/255,opacity: 0.75)
+
+    @State private var words: [String] = []
+
     @State private var selectedJob = "Développeur"
     @State private var showToast: Bool = false
     @State private var toastMessage: String = ""
@@ -20,10 +24,11 @@ struct MemberDetailView: View {
     @State private var name = ""
     @State private var role = ""
     @State private var rating = 0
-    @State private var salary = 0
+    @State private var salary = 0.0
     @State private var creationDate = Date()
     @State private var color = Color(.white)
     var body: some View {
+        
             VStack{
                 ZStack (alignment: .bottom){
                     AsyncImage(url: URL(string: member.imageUrl) ?? URL(string: "https://images.pexels.com/photos/428364/pexels-photo-428364.jpeg")!) { phase in
@@ -40,13 +45,47 @@ struct MemberDetailView: View {
                             EmptyView()
                         }
                     }
-                    Text("\(member.name) : \(member.role)")
-                           .font(.title)
-                           .fontWeight(.bold)
-                           .foregroundColor(.white)
-                           .padding()
+                    VStack{
+                        Text("\(member.name) : \(member.role)")
+                               .font(.title)
+                               .fontWeight(.bold)
+                               .foregroundColor(.white)
+                               .padding()
+                            
                         
+                ZStack {
+                            // Conteneur principal
+                            RoundedRectangle(cornerRadius: 15)
+                        .foregroundColor(.indigo)
+                                .frame(width: 350, height: 60)
+                            
+                            // Flèche
+                            Triangle()
+                        .fill(.indigo)
+                                .frame(width: 10, height: 20)
+                                .rotationEffect(.degrees(0))
+                                .offset(x: -81, y: -30)
+                            
+                            // Texte dans la bulle
+                    HStack {
+                                if words.isEmpty {
+                                    ProgressView("Loading Words...")
+                                        .onAppear {
+                                            fetchWords()
+                                        }
+                                } else {
+                                    Text(words.joined(separator: " "))
+                                                       .padding()
+                                                       .multilineTextAlignment(.center)
+                                }
+                    }.foregroundColor(.white)
+
+                            
+                        }
                     }
+                    
+                }
+                
                 
                 HStack{
                     Text("Salaire : ")
@@ -91,7 +130,6 @@ struct MemberDetailView: View {
                                 teamStore.members[index].rating = rating
                                 teamStore.members[index].salary = salary
                                 teamStore.members[index].creationDate = creationDate
-                                teamStore.members[index].color = color
                             }
                             showToast = true
                             toastMessage = "Membre modifié!"
@@ -124,7 +162,6 @@ struct MemberDetailView: View {
                             rating = member.rating
                             salary = member.salary
                             creationDate = member.creationDate
-                            color = member.color
             }
         }
     
@@ -133,4 +170,45 @@ struct MemberDetailView: View {
         dateFormatter.dateStyle = .short
         return dateFormatter.string(from: date)
     }
+    // Générer des phrases aléatoires correspondant à un
+    func fetchWords() {
+            if let url = URL(string: "https://random-word-api.herokuapp.com/word?number=4") {
+                URLSession.shared.dataTask(with: url) { data, response, error in
+                    if let error = error {
+                        print("Error fetching data: \(error)")
+                        return
+                    }
+
+                    guard let httpResponse = response as? HTTPURLResponse,
+                          (200...299).contains(httpResponse.statusCode) else {
+                        print("Invalid response")
+                        return
+                    }
+
+                    if let data = data {
+                        do {
+                            let decodedData = try JSONDecoder().decode([String].self, from: data)
+                            DispatchQueue.main.async {
+                                self.words = decodedData
+                            }
+                        } catch {
+                            print("Error decoding data: \(error)")
+                        }
+                    }
+                }.resume()
+            }
+        }
+    
 }
+
+struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+

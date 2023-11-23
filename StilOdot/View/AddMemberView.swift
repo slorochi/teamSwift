@@ -19,7 +19,7 @@ struct AddMemberView: View {
     @State private var name = ""
     @State private var role = ""
     @State private var rating = 5
-    @State private var salary = 0
+    @State private var salary = 0.0
     @State private var creationDate = Date()
     @State private var color = Color(.white)
     var body: some View {
@@ -39,13 +39,23 @@ struct AddMemberView: View {
                     HStack {TextField("Salaire", value: $salary , format: .number) .keyboardType(.numberPad)
                         Text("€")}
                     DatePicker("Date d'arrivée", selection: $creationDate, displayedComponents: .date)
-                    ColorPicker("Choisir couleur",selection: $color)
                 }.padding(8)
                 
                 Section {
                     
                     Button("Ajouter") {
-                        let newTeam = Team(imageUrl: imageUrl, name: name, role: selectedJob, rating: rating, salary: salary, creationDate: creationDate, color: color)
+                        let newTeam = Team(imageUrl: imageUrl, name: name, role: selectedJob, rating: rating, salary: salary, creationDate: creationDate)
+                        
+                        let encoder = JSONEncoder()
+                            do {
+                                let data = try encoder.encode(teamStore.members)
+                                if let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                                    let fileURL = documentsDirectory.appendingPathComponent("members.json")
+                                    try data.write(to: fileURL)
+                                }
+                            } catch {
+                                print("Error saving members to JSON: \(error)")
+                            }
                         teamStore.members.append(newTeam)
                         
                         showToast = true
